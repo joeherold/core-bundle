@@ -21,6 +21,7 @@ namespace Contao\CoreBundle\EventListener;
 
 use Contao\CoreBundle\Controller\FrontendController;
 use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Contao\Input;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -84,6 +85,11 @@ class FinalCacheHeadersListener
         $insertTagAttribute = $request->get("insertTag");
         $formatAttribute = $request->get("_format");
 
+        // fist check, if we have a file-download
+        if(Input::get('file', true)) {
+            // in case we have a file download request, never cache the file!
+            return $response->setPrivate();
+        }
 
         // we distinguish between rendering of insert tags (sub requests) and page rendering (master request)
         if (
